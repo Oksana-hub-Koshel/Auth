@@ -1,44 +1,21 @@
 import './App.css';
 import {useState} from "react";
-import {createUserWithEmailAndPassword, onAuthStateChanged, signOut, signInWithEmailAndPassword} from "firebase/auth";
-import {auth} from "./firebase_config/firebase-config";
+import {register, out, login} from "./auth/auth_logic";
 
 
 function App() {
+
+    const [user, setUser]=useState({})
     const [registerEmail, setRegisterEmail]=useState('')
     const [registerPassword, setRegisterPassword]=useState('')
     const [loginEmail, setLoginEmail]=useState('')
     const [loginPassword, setLoginPassword]=useState('')
-    const [user, setUser]=useState({})
     //
     // onAuthStateChanged(auth,(currentUser) =>{
     //     setUser(currentUser);
     // })
 
-    const register = async () =>{
-        try{
-            const user = await createUserWithEmailAndPassword(auth, registerEmail,registerPassword);
-            console.log(user)
-        }
-        catch (error){
-            console.log(error.message())
-        }
 
-    }
-
-    const login =async () =>{
-        try{
-            const user = await signInWithEmailAndPassword(auth, loginEmail,loginPassword);
-            console.log(user)
-        }
-        catch (error){
-            console.log(error.message())
-        }
-    }
-
-    const out = async () => {
-        await signOut(auth)
-    }
 
     return (
         <div className="App">
@@ -47,7 +24,7 @@ function App() {
                 <div style={{display:"flex", gap:5, justifyContent:"center"}}>
                     <input placeholder="Email" onChange={(event) => setRegisterEmail(event.target.value)}/>
                     <input placeholder="Password"  onChange={(event) => setRegisterPassword(event.target.value)}/>
-                    <button onClick={register}>Create User</button>
+                    <button onClick={() => register(registerEmail, registerPassword)}>Create User</button>
                 </div>
 
             </div>
@@ -56,7 +33,7 @@ function App() {
                 <div style={{display:"flex", gap:5, justifyContent:"center"}}>
                     <input  onChange={(event) => setLoginEmail(event.target.value)}/>
                     <input  onChange={(event) => setLoginPassword(event.target.value)}/>
-                    <button onClick={login}>Login</button>
+                    <button onClick={()=> login( loginEmail, loginPassword)}>Login</button>
                 </div>
 
             </div>
