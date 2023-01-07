@@ -1,47 +1,64 @@
 import './App.css';
+import Auth from "./auth/Auth";
 import {useState} from "react";
-import {register, out, login} from "./auth/auth_logic";
+import {renderToReadableStream} from "react-dom/server";
+import Task from "./Task";
+
 
 
 function App() {
+    const [newTask, setNewTask]=useState('')
+    const [todoList, setTodoList]=useState([])
 
-    const [user, setUser]=useState({})
-    const [registerEmail, setRegisterEmail]=useState('')
-    const [registerPassword, setRegisterPassword]=useState('')
-    const [loginEmail, setLoginEmail]=useState('')
-    const [loginPassword, setLoginPassword]=useState('')
-    //
-    // onAuthStateChanged(auth,(currentUser) =>{
-    //     setUser(currentUser);
-    // })
+    const addTask = () => {
+        const task={
+            id: todoList.length ===0 ? 1 :todoList[todoList.length-1].id + 1,
+            taskName: newTask,
+            complete: false
+        }
+        setTodoList(  [...todoList, task])
 
+    }
 
+    const deleteItem = (id) => {
+        setTodoList(todoList.filter((task) => task.id !== id))
+    }
+    const completed = (id) => {
+        setTodoList(todoList.map((task) =>{
+            if(task.id === id){
+                return (
+                    {...task, complete: true}
+                )
+            }
+            else {
+                return task
+            }
+        }
+
+   ))
+    }
 
     return (
         <div className="App">
-            <div>
-                <h6>Register User</h6>
-                <div style={{display:"flex", gap:5, justifyContent:"center"}}>
-                    <input placeholder="Email" onChange={(event) => setRegisterEmail(event.target.value)}/>
-                    <input placeholder="Password"  onChange={(event) => setRegisterPassword(event.target.value)}/>
-                    <button onClick={() => register(registerEmail, registerPassword)}>Create User</button>
-                </div>
+            {/*<Auth />*/}
 
-            </div>
+            <input onChange={(event) => setNewTask(event.target.value)}/>
+            <button onClick={addTask}>Add Task</button>
             <div>
-                <h6>Login</h6>
-                <div style={{display:"flex", gap:5, justifyContent:"center"}}>
-                    <input  onChange={(event) => setLoginEmail(event.target.value)}/>
-                    <input  onChange={(event) => setLoginPassword(event.target.value)}/>
-                    <button onClick={()=> login( loginEmail, loginPassword)}>Login</button>
-                </div>
+                {todoList.map(task => {
+                  return(
 
+                   <Task
+                       task={task.taskName}
+                       deleteItem={deleteItem}
+                       id={task.id}
+                       completed={completed}
+                       complete={task.complete}
+                   />
+                  )})
+               }
             </div>
-            <div>
-                <h6>User Logged In:</h6>
-                {user?.email}
-                <button onClick={out}>Sign Out</button>
-            </div>
+
         </div>
 
 
