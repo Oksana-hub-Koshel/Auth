@@ -1,63 +1,32 @@
 import './App.css';
-import Auth from "./auth/Auth";
-import {useState} from "react";
-import {renderToReadableStream} from "react-dom/server";
-import Task from "./Task";
+import {Routes, Route, NavLink} from "react-router-dom";
+import Home from "./pages/Home";
+import Menu from "./pages/Menu";
+import Contacts from "./pages/Contacts";
+import Navbar from "./Navbar";
+import {createContext, useState} from "react";
+import Form from "./Form/Form";
 
+export const AppContext=createContext();
 
 
 function App() {
-    const [newTask, setNewTask]=useState('')
-    const [todoList, setTodoList]=useState([])
-
-    const addTask = () => {
-        const task={
-            id: todoList.length ===0 ? 1 :todoList[todoList.length-1].id + 1,
-            taskName: newTask,
-            complete: false
-        }
-        setTodoList(  [...todoList, task])
-
-    }
-
-    const deleteItem = (id) => {
-        setTodoList(todoList.filter((task) => task.id !== id))
-    }
-    const completed = (id) => {
-        setTodoList(todoList.map((task) =>{
-            if(task.id === id){
-                return (
-                    {...task, complete: true}
-                )
-            }
-            else {
-                return task
-            }
-        }
-
-   ))
-    }
+const [userName, setUserName]=useState('')
 
     return (
         <div className="App">
+            <Navbar />
+            <AppContext.Provider value={{userName, setUserName}}>
+            <Routes>
+                <Route path="/" element={<Home />}/>
+                <Route path="/menu" element={<Menu />}/>
+                <Route path="/contacts" element={<Contacts />}/>
+                <Route path="*" element={<h1>Page not found</h1>}/>
+            </Routes>
+            </AppContext.Provider>
+<Form />
             {/*<Auth />*/}
-
-            <input onChange={(event) => setNewTask(event.target.value)}/>
-            <button onClick={addTask}>Add Task</button>
-            <div>
-                {todoList.map(task => {
-                  return(
-
-                   <Task
-                       task={task.taskName}
-                       deleteItem={deleteItem}
-                       id={task.id}
-                       completed={completed}
-                       complete={task.complete}
-                   />
-                  )})
-               }
-            </div>
+            {/*<TodoList />*/}
 
         </div>
 
